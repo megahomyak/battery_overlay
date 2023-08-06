@@ -2,10 +2,22 @@ from PyQt5.QtCore import QPoint, Qt, QTimer
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
+from PIL import ImageQt, Image, ImageDraw, ImageFont
+
 import psutil
 
 
 ACTIVATION_PERCENTAGES = list(range(100))
+IMAGE = Image.open("battery.png")
+FONT = ImageFont.truetype("font.ttf", 16)
+
+
+def draw_fn(draw, percentage):
+    percentage = str(percentage) + "%"
+    _, _, w, h = draw.textbbox((0, 0), percentage, font=FONT)
+    x = (IMAGE.width - w) / 2
+    y = (IMAGE.height - h) / 2
+    draw.text((x, y), percentage, fill='black', font=FONT)
 
 
 class BatteryIndicator(QMainWindow):
@@ -13,7 +25,10 @@ class BatteryIndicator(QMainWindow):
         percentage = int(psutil.sensors_battery().percent)
         print(percentage)
         if percentage < self.last_percentage and percentage in ACTIVATION_PERCENTAGES:
-            print("in")
+            image = IMAGE.copy()
+            draw = ImageDraw.Draw(image)
+            draw_fn(draw, percentage)
+            self.background = QPixmap.fromImage(ImageQt.ImageQt(image))
             self.show()
             QTimer.singleShot(5000, self.hide)
         self.last_percentage = percentage
@@ -25,15 +40,18 @@ class BatteryIndicator(QMainWindow):
 
         self.setWindowOpacity(0.5)
         self.lastPoint = QPoint()
-        self.background = QPixmap("../../website_icon.png")
+
         self.check_timer = QTimer()
         self.check_timer.timeout.connect(self.check_battery_level)
         self.check_timer.start(500)
-        width = self.background.width()
-        height = self.background.height()
-        x = 300
-        y = 300
+
+        screen_size = app.primaryScreen().size()
+        width = IMAGE.width
+        height = IMAGE.height
+        x = screen_size.width() - IMAGE.width
+        y = screen_size.height() - IMAGE.height
         self.setGeometry(x, y, width, height)
+
         self.setWindowFlags(
             self.windowFlags()
             | Qt.WindowTransparentForInput
