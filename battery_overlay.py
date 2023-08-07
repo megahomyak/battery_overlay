@@ -2,15 +2,14 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
-from PIL import ImageQt, Image, ImageDraw, ImageFont
+from PIL import ImageFilter, ImageQt, Image, ImageDraw, ImageFont
 
 import psutil
 
 
 ACTIVATION_PERCENTAGES = list(range(100))
 IMAGE = Image.open("battery.png")
-FONT = ImageFont.truetype("font.ttf", 16)
-GRAPHICS_SCALING = 1.375
+FONT = ImageFont.truetype("font.ttf", 70)
 
 
 def draw_fn(draw, percentage):
@@ -18,7 +17,7 @@ def draw_fn(draw, percentage):
     _, _, w, h = draw.textbbox((0, 0), percentage, font=FONT)
     x = (IMAGE.width - w) / 2
     y = (IMAGE.height - h) / 2
-    draw.text((x, y), percentage, fill='black', font=FONT)
+    draw.text((x, y), percentage, fill='blue', font=FONT)
 
 
 class BatteryIndicator(QMainWindow):
@@ -28,6 +27,9 @@ class BatteryIndicator(QMainWindow):
             image = IMAGE.copy()
             draw = ImageDraw.Draw(image)
             draw_fn(draw, percentage)
+            blurred = image.filter(ImageFilter.GaussianBlur(radius = 20))
+            blurred.alpha_composite(image, (0, 0))
+            image = blurred
             self.background = QPixmap.fromImage(ImageQt.ImageQt(image))
             self.show()
             QTimer.singleShot(5000, self.hide)
@@ -38,7 +40,7 @@ class BatteryIndicator(QMainWindow):
 
         self.last_percentage = int(psutil.sensors_battery().percent)
 
-        self.setWindowOpacity(0.5)
+        self.setWindowOpacity(1)
 
         self.check_timer = QTimer()
         self.check_timer.timeout.connect(self.check_battery_level)
