@@ -6,9 +6,9 @@ authors = ["megahomyak <g.megahomyak@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-PyQt5 = "^5.15.9"
 psutil = "^5.9.5"
 Pillow = "^10.0.0"
+PyQt6 = "^6.5.2"
 
 [tool.poetry.dev-dependencies]
 
