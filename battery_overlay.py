@@ -7,29 +7,29 @@ from PIL import ImageFilter, ImageQt, Image, ImageDraw, ImageFont
 import psutil
 
 
-ACTIVATION_PERCENTAGES = list(range(100))
-IMAGE = Image.open("battery.png")
-FONT = ImageFont.truetype("font.ttf", 70)
-
-
-def draw_fn(draw, percentage):
-    percentage = str(percentage) + "%"
-    _, _, w, h = draw.textbbox((0, 0), percentage, font=FONT)
-    x = (IMAGE.width - w) / 2
-    y = (IMAGE.height - h) / 2
-    draw.text((x, y), percentage, fill='blue', font=FONT)
+img = Image.open
+PERCENTAGES_TO_IMAGES = {
+    i: img("battery.png")
+    for i in range(100)
+}
 
 
 class BatteryIndicator(QMainWindow):
     def check_battery_level(self):
         percentage = int(psutil.sensors_battery().percent)
-        if percentage < self.last_percentage and percentage in ACTIVATION_PERCENTAGES:
-            image = IMAGE.copy()
-            draw = ImageDraw.Draw(image)
-            draw_fn(draw, percentage)
-            blurred = image.filter(ImageFilter.GaussianBlur(radius = 20))
-            blurred.alpha_composite(image, (0, 0))
-            image = blurred
+        if (
+                percentage < self.last_percentage
+                and percentage in PERCENTAGES_TO_IMAGES
+        ):
+            image = PERCENTAGES_TO_IMAGES[percentage]
+            screen_size = app.primaryScreen().size()
+            pixel_ratio = app.devicePixelRatio() ** -1
+            width = int(image.width * pixel_ratio)
+            height = int(image.height * pixel_ratio)
+            x = screen_size.width() - width
+            y = screen_size.height() - height
+            self.setGeometry(x, y, width, height)
+
             self.background = QPixmap.fromImage(ImageQt.ImageQt(image))
             self.show()
             QTimer.singleShot(5000, self.hide)
@@ -45,14 +45,6 @@ class BatteryIndicator(QMainWindow):
         self.check_timer = QTimer()
         self.check_timer.timeout.connect(self.check_battery_level)
         self.check_timer.start(500)
-
-        screen_size = app.primaryScreen().size()
-        pixel_ratio = app.devicePixelRatio() ** -1
-        width = int(IMAGE.width * pixel_ratio)
-        height = int(IMAGE.height * pixel_ratio)
-        x = screen_size.width() - width
-        y = screen_size.height() - height
-        self.setGeometry(x, y, width, height)
 
         self.setWindowFlags(
             self.windowFlags()
