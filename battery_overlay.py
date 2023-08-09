@@ -1,6 +1,6 @@
-from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation
+from PyQt6.QtCore import QEasingCurve, Qt, QTimer, QPropertyAnimation, QAbstractAnimation
 from PyQt6.QtGui import QPainter, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtWidgets import QApplication, QGraphicsOpacityEffect, QMainWindow
 
 from PIL import ImageQt, Image
 
@@ -15,6 +15,16 @@ PERCENTAGES_TO_IMAGES = {
 
 
 class BatteryIndicator(QMainWindow):
+    def hide_window(self):
+        effect = QGraphicsOpacityEffect(self)
+        self.anim = QPropertyAnimation(effect, b"opacity")
+        self.anim.setStartValue(1)
+        self.anim.setDuration(20000)
+        self.anim.setEasingCurve(QEasingCurve.Type.Linear)
+        self.anim.setEndValue(0)
+        self.anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
+        QTimer.singleShot(20000, self.hide)
+
     def show_battery_level(self, percentage):
         image = PERCENTAGES_TO_IMAGES[percentage]
         screen_size = app.primaryScreen().size()
@@ -25,9 +35,17 @@ class BatteryIndicator(QMainWindow):
         y = screen_size.height() - height
         self.setGeometry(x, y, width, height)
 
+        effect = QGraphicsOpacityEffect(self)
+        self.anim = QPropertyAnimation(effect, b"opacity")
+        self.anim.setStartValue(0)
+        self.anim.setEasingCurve(QEasingCurve.Type.Linear)
+        self.anim.setDuration(20000)
+        self.anim.setEndValue(1)
+        self.anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
+
         self.background = QPixmap.fromImage(ImageQt.ImageQt(image))
         self.show()
-        QTimer.singleShot(5000, self.hide)
+        QTimer.singleShot(25000, self.hide_window)
 
     def check_battery_level(self):
         percentage = int(psutil.sensors_battery().percent)
