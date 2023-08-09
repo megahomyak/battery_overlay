@@ -23,7 +23,6 @@ class BatteryIndicator(QMainWindow):
         self.anim.setEasingCurve(QEasingCurve.Type.Linear)
         self.anim.setEndValue(0)
         self.anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
-        QTimer.singleShot(20000, self.hide)
 
     def show_battery_level(self, percentage):
         image = PERCENTAGES_TO_IMAGES[percentage]
@@ -44,7 +43,6 @@ class BatteryIndicator(QMainWindow):
         self.anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
 
         self.background = QPixmap.fromImage(ImageQt.ImageQt(image))
-        self.show()
         QTimer.singleShot(25000, self.hide_window)
 
     def check_battery_level(self):
@@ -61,8 +59,6 @@ class BatteryIndicator(QMainWindow):
 
         self.last_percentage = int(psutil.sensors_battery().percent)
 
-        self.setWindowOpacity(1)
-
         self.check_timer = QTimer()
         self.check_timer.timeout.connect(self.check_battery_level)
         self.check_timer.start(500)
@@ -74,6 +70,7 @@ class BatteryIndicator(QMainWindow):
             | Qt.WindowType.FramelessWindowHint
             | Qt.WindowType.WindowStaysOnTopHint
         )
+        self.setWindowOpacity(0)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -84,4 +81,5 @@ class BatteryIndicator(QMainWindow):
 
 app = QApplication([])
 window = BatteryIndicator()
+window.show_battery_level(98)
 app.exec()
