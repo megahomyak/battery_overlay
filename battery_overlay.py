@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
