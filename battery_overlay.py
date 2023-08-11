@@ -13,6 +13,8 @@ PERCENTAGES_TO_IMAGES = {
     for i in range(100)
 }
 
+def get_percentage() -> int:
+    return int(psutil.sensors_battery().percent)
 
 class BatteryIndicator(QMainWindow):
     def show_battery_level(self, percentage):
@@ -30,7 +32,7 @@ class BatteryIndicator(QMainWindow):
         QTimer.singleShot(5000, self.hide)
 
     def check_battery_level(self):
-        percentage = int(psutil.sensors_battery().percent)
+        percentage = get_percentage()
         if (
                 percentage < self.last_percentage
                 and percentage in PERCENTAGES_TO_IMAGES
@@ -41,7 +43,7 @@ class BatteryIndicator(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.last_percentage = int(psutil.sensors_battery().percent)
+        self.last_percentage = get_percentage()
 
         self.setWindowOpacity(1)
 
