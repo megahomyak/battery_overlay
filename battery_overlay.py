@@ -2,32 +2,23 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
-from PIL import ImageQt, Image
-
 import psutil
 
-
-img = Image.open
-PERCENTAGES_TO_IMAGES = {
-    i: img("battery.png")
-    for i in range(100)
-}
 
 def get_percentage() -> int:
     return int(psutil.sensors_battery().percent)
 
 class BatteryIndicator(QMainWindow):
     def show_battery_level(self, percentage):
-        image = PERCENTAGES_TO_IMAGES[percentage]
+        self.background = PERCENTAGES_TO_IMAGES[percentage]
         screen_size = app.primaryScreen().size()
         pixel_ratio = app.devicePixelRatio() ** -1
-        width = int(image.width * pixel_ratio)
-        height = int(image.height * pixel_ratio)
+        width = int(self.background.width() * pixel_ratio)
+        height = int(self.background.height() * pixel_ratio)
         x = screen_size.width() - width
         y = screen_size.height() - height
         self.setGeometry(x, y, width, height)
 
-        self.background = QPixmap.fromImage(ImageQt.ImageQt(image))
         self.show()
         QTimer.singleShot(5000, self.hide)
 
@@ -67,5 +58,11 @@ class BatteryIndicator(QMainWindow):
         painter.drawPixmap(self.rect(), self.background)
 
 app = QApplication([])
+
+PERCENTAGES_TO_IMAGES = {
+    i: QPixmap("battery.png")
+    for i in range(100)
+}
+
 window = BatteryIndicator()
 app.exec()
