@@ -1,3 +1,7 @@
+#include <QApplication>
+#include <QLabel>
+#include <QtGui>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,3 +24,10 @@ int get_percentage() {
   return percentage;
 }
 #endif
+
+int main(int argc, char **argv) {
+  QApplication app(argc, argv);
+  QLabel label("Hello, world!");
+  label.show();
+  return app.exec();
+}
