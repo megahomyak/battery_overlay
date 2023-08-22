@@ -17,6 +17,7 @@ void die(const char *text) {
   exit(-1);
 }
 
+#ifdef __linux__
 int get_percentage() {
   int percentage;
   FILE *batteryFile = fopen("/sys/class/power_supply/BAT1/capacity", "r");
@@ -29,6 +30,7 @@ int get_percentage() {
   fclose(batteryFile);
   return percentage;
 }
+#endif
 
 class BatteryIndicator : public QMainWindow {
   Q_OBJECT;
