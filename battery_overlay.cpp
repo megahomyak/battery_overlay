@@ -27,7 +27,10 @@ int get_percentage() {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  QLabel label("Hello, world!");
+  QPixmap pixmap;
+  printf("%d", pixmap.load(":/battery.png"));
+  QLabel label;
+  label.setPixmap(pixmap);
   label.show();
   return app.exec();
 }

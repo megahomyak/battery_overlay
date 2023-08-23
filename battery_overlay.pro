@@ -9,3 +9,8 @@ INCLUDEPATH += .
 
 # Input
 SOURCES += battery_overlay.cpp
+
+RESOURCES = resources.qrc
+
+QT += gui
+QT += widgets
