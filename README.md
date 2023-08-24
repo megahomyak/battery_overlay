@@ -1,12 +1,19 @@
-# battery_overlay
+# Battery overlay
 
-**Warning: works only on Linux. The battery used is BAT1.**
+## Prerequisites
 
-## Preparation
+### Building the program
 
-```
-sudo apt install qt6-base-dev qt6-declarative-dev
-```
+* gcc
+* Xlib
+* Xfixes
+
+### Building the image header files
+
+Only install these if you want to change the built-in images.
+
+* Python
+* poetry (for Python)
 
 ## Building
 
@@ -14,8 +21,14 @@ sudo apt install qt6-base-dev qt6-declarative-dev
 make
 ```
 
+## Cleaning executables
+
+```
+make clean
+```
+
 ## Running
 
 ```
-./battery_overlay
+./program.o
 ```
