@@ -6,5 +6,6 @@ program.o: program.c battery.h
 clean:
 	rm program.o
 
-battery.h: battery.png
-	python image_converter.py battery
+images/converted/%.h: images/source/%.png
+	cd image_converter
+	poetry run python image_converter.py --output ../$@ --input ../$< --variable-name $(*F)
