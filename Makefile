@@ -1,4 +1,4 @@
-program.o: program.c battery.h
+program.o: program.c images/images.h
 	gcc program.c -o program.o -lX11 -lXfixes -O3 -g0
 
 .PHONY: clean
@@ -6,6 +6,6 @@ program.o: program.c battery.h
 clean:
 	rm program.o
 
-images/converted/%.h: images/source/%.png
-	cd image_converter
-	poetry run python image_converter.py --output ../$@ --input ../$< --variable-name $(*F)
+images/images.h: $(wildcard images/sources/*.png)
+	cd image_converter; \
+		poetry run python image_converter.py --output ../images/images.h --input ../images/listing.json

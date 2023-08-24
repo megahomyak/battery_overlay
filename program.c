@@ -30,8 +30,6 @@ int main() {
 
     int screen = DefaultScreen(display);
 
-    XCreateImage;
-
     /* create window */
     Window window = XCreateSimpleWindow(display, RootWindow(display, screen), WIN_X, WIN_Y, WIN_WIDTH, WIN_HEIGHT,
             WIN_BORDER, BlackPixel(display, screen), WhitePixel(display, screen));
