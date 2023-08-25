@@ -5,40 +5,46 @@
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Xfixes.h>
 
-enum {
-    RECT_X = 20,
-    RECT_Y = 20,
-    RECT_WIDTH = 10,
-    RECT_HEIGHT = 10,
-
-    WIN_X = 10,
-    WIN_Y = 10,
-    WIN_WIDTH = 100,
-    WIN_HEIGHT = 100,
-    WIN_BORDER = 1,
+struct Context {
+    Display* display;
+    int screen;
+    Window window;
 };
 
-char a[] = {3, 5, 6};
+struct Context build_context(void) {
+
+}
+
+void destroy_context() {}
+
+#define print_error(text) fprintf(stderr, text "\n")
 
 int main() {
-    /* open connection with the server */
     Display *display = XOpenDisplay(NULL);
     if (display == NULL) {
-        fprintf(stderr, "Cannot open display\n");
+        print_error("Cannot open display");
         exit(1);
     }
-
     int screen = DefaultScreen(display);
+    Window window;
+    {
+        enum { X = 0, Y = 0, WIDTH = 100, HEIGHT = 100, BORDER_WIDTH = 0 };
+        int FOREGROUND = WhitePixel(display, screen);
+        int BACKGROUND = BlackPixel(display, screen);
+        window = XCreateSimpleWindow(
+            display, RootWindow(display, screen), X, Y, WIDTH, HEIGHT,
+            BORDER_WIDTH, BlackPixel(display, screen), WhitePixel(display, screen)
+        );
+    }
 
-    /* create window */
-    Window window = XCreateSimpleWindow(display, RootWindow(display, screen), WIN_X, WIN_Y, WIN_WIDTH, WIN_HEIGHT,
-            WIN_BORDER, BlackPixel(display, screen), WhitePixel(display, screen));
+    struct Context context = { display, screen, window };
 
-    /* process window close event through event handler so XNextEvent does not fail */
+    /*
     Atom del_window = XInternAtom(display, "WM_DELETE_WINDOW", 0);
     XSetWMProtocols(display, window, &del_window, 1);
+    */
 
-    /* select kind of events we are interested in */
+    // Select kind of events we are interested in
     XSelectInput(display, window, ExposureMask | KeyPressMask);
 
     XRectangle rect;
@@ -46,7 +52,7 @@ int main() {
     XFixesSetWindowShapeRegion(display, window, ShapeInput, 0, 0, region);
     XFixesDestroyRegion(display, region);
 
-    /* display the window */
+    // Display the window
     XMapWindow(display, window);
 
     /* event loop */
@@ -67,7 +73,7 @@ int main() {
                 /* NO DEFAULT */
         }
     }
-breakout:
+    breakout:
 
     /* destroy window */
     XDestroyWindow(display, window);
