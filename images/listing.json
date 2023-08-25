@@ -1,4 +1,4 @@
 [
-    {"file_path": "sources/battery.png", "battery_percentage": 20},
-    {"file_path": "sources/battery.png", "battery_percentage": 30}
+    {"image_path": "sources/battery.png", "battery_percentage": 20},
+    {"image_path": "sources/battery.png", "battery_percentage": 30}
 ]
